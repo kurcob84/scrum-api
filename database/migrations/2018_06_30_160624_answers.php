@@ -18,6 +18,7 @@ class Answers extends Migration
             $table->string('answer')->default(0);
             $table->boolean('correct');
             $table->unsignedInteger('questions_id');
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('questions_id')
@@ -32,8 +33,7 @@ class Answers extends Migration
      * @return void
      */
     public function down()
-    {
-        $table->dropForeign('answers_questions_id_foreign');
+    { 
         Schema::drop('answers');
     }
 }

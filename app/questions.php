@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class questions extends Model
 {
@@ -12,6 +13,6 @@ class questions extends Model
     protected $dates = ['deleted_at'];
 
     public function answers() {
-        return $this->belongsToMany('answers');
+        return $this->hasMany('App\Answers');
     }
 }

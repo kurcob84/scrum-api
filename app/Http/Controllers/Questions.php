@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Questions;
 use App\Answers;
 
-class seed_questions_answers extends Controller
+class QuestionsController extends Controller
 {
      /**
      * Display a listing of the resource.
@@ -15,10 +15,10 @@ class seed_questions_answers extends Controller
      */
     public function index(Request $request) {
         if($request->id != null) {
-            $Questions = Questions::whereId($request->id)->select('id','name')->first();
+            $Questions = Questions::with('answers')->whereId($request->id)->first();
         }
         else {
-            $Questions = Questions::select('id','name')->get();
+            $Questions = Questions::with('answers')->get();
         }
         return response()->json([
             'status' => 'ok',
@@ -32,7 +32,7 @@ class seed_questions_answers extends Controller
      */
     public function create(Request $request) {
         $validator = Validator::make($request->all(), [
-            'name' => 'required'
+            'question' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
@@ -78,3 +78,4 @@ class seed_questions_answers extends Controller
         ]);
     }
 }
+
