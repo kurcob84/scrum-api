@@ -19,4 +19,25 @@ class QuestionTest extends TestCase
 
         $response->assertStatus(200);
     }
+    
+    public function questionCreateTest()
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+    }
+    
+    public function questionUpdateTest()
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+    }
+    
+    public function questionDeleteTest()
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+    }
 }
