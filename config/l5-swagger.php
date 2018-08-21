@@ -59,6 +59,7 @@ return [
     ],
 
     'paths' => [
+        'docs_real' => '../docs/swagger.json',
         /*
         |--------------------------------------------------------------------------
         | Absolute path to location where parsed swagger annotations will be stored
@@ -163,7 +164,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'generate_always' => env('L5_SWAGGER_GENERATE_ALWAYS', false),
+    'generate_always' => env('L5_SWAGGER_GENERATE_ALWAYS', true),
 
     /*
     |--------------------------------------------------------------------------

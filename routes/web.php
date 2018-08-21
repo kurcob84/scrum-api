@@ -12,5 +12,9 @@
 */
 
 Route::get('/', function () {
-    return redirect('/api/documentation');
+    return view('vendor.l5-swagger.index', [
+        'secure'            => Request::secure(),
+        'urlToDocs'         => Config::get('l5-swagger.paths.docs_real')
+        ]
+    );
 });
