@@ -1,11 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class answers extends Model
+class Answers extends Model
 {
     protected $table = 'answers';
     public $timestamps = true;

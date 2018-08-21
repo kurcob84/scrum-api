@@ -11,5 +11,6 @@
 |
 */
 
-
-Route::get('questions', 'QuestionsController@index');
+Route::get('/', function () {
+    return redirect('/api/documentation');
+});

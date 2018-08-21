@@ -7,33 +7,36 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
+    public function login(LoginRequest $request, JWTAuth $JWTAuth) {
 
-    use AuthenticatesUsers;
+        $credentials = $request->only(['email', 'password']);        
+        $credentials['email'] = strtolower($credentials['email']);
+        
+        try {
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
+            $token = $JWTAuth->attempt($credentials);
+            $user = $JWTAuth->toUser($token);
+            $user->token = $token;
+            $user->role =  $user->getRoles();
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('guest')->except('logout');
+            if($user->deleted_at != NULL) 
+            {
+                throw new AccessDeniedHttpException();
+            }
+            
+            if(!$token) 
+            {
+                throw new AccessDeniedHttpException();
+            }
+
+            return response()->json([
+                'status' => 'ok',
+                'user' => $user
+            ], 201);
+            
+        } catch (JWTException $e) 
+        {   
+           throw new AccessDeniedHttpException();
+        }
     }
 }

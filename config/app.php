@@ -161,7 +161,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         Cviebrock\LaravelElasticsearch\ServiceProvider::class, 
         Barryvdh\Cors\ServiceProvider::class,
-
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+        L5Swagger\L5SwaggerServiceProvider::class,
     ],
 
     /*
@@ -211,6 +212,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Elasticsearch' => Cviebrock\LaravelElasticsearch\Facade::class,
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
 
     ],
 
