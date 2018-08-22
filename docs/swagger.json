@@ -6,23 +6,126 @@
         "contact": {
             "email": "roggepatrick@googlemail.com"
         },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
         "version": "1.0.0"
     },
     "paths": {
-        "/questions": {
-            "get": {
+        "auth/login": {
+            "post": {
                 "tags": [
-                    "Questions"
+                    "Auth"
                 ],
-                "summary": "List of questions and answerssssss",
+                "summary": "Login for Users",
+                "operationId": "App\\Http\\Controllers\\Auth\\LoginController::login",
                 "responses": {
                     "405": {
                         "description": "Invalid input"
                     }
+                }
+            }
+        },
+        "auth/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register form for Users",
+                "operationId": "App\\Http\\Controllers\\Auth\\RegisterController::register",
+                "responses": {
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "questions/read": {
+            "post": {
+                "tags": [
+                    "Questions"
+                ],
+                "summary": "List of questions and answers",
+                "operationId": "App\\Http\\Controllers\\QuestionsController::read",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "query",
+                        "description": "JWT access token.",
+                        "required": true,
+                        "schema": {
+                            "type": "header"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/../../Models/Answers"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "questions/create": {
+            "post": {
+                "tags": [
+                    "Questions"
+                ],
+                "summary": "Create a question with answers",
+                "operationId": "App\\Http\\Controllers\\QuestionsController::create",
+                "responses": {
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "questions/delete": {
+            "post": {
+                "tags": [
+                    "Questions"
+                ],
+                "summary": "Delete a question",
+                "operationId": "App\\Http\\Controllers\\QuestionsController::delete",
+                "responses": {
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Answer": {
+                "title": "Answers",
+                "properties": {
+                    "answer": {
+                        "type": "string"
+                    },
+                    "correct": {
+                        "type": "boolean"
+                    }
+                },
+                "xml": {
+                    "name": "Answers"
+                }
+            },
+            "Question": {
+                "title": "Questions",
+                "properties": {
+                    "question": {
+                        "type": "string"
+                    }
+                },
+                "xml": {
+                    "name": "Questions"
                 }
             }
         }

@@ -15,15 +15,12 @@ class Answers extends Migration
     {
         Schema::create('answers', function (Blueprint $table) {
             $table->increments('id');
+            $table->timestamps();
+            $table->softDeletes();
             $table->string('answer')->default(0);
             $table->boolean('correct');
             $table->unsignedInteger('questions_id');
-            $table->softDeletes();
-            $table->timestamps();
-
-            $table->foreign('questions_id')
-                    ->references('id')->on('questions')
-                    ->onDelete('cascade');
+            $table->foreign('questions_id')->references('id')->on('questions')->onDelete('cascade');
         });
     }
 

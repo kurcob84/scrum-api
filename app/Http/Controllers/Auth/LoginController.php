@@ -7,6 +7,17 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
+    /**
+     * @OAS\Post(
+     *     path="auth/login",
+     *     tags={"Auth"},
+     *     summary="Login for Users",
+     *     @OAS\Response(
+     *         response=405,
+     *         description="Invalid input"
+     *     ),
+     * )
+     */    
     public function login(LoginRequest $request, JWTAuth $JWTAuth) {
 
         $credentials = $request->only(['email', 'password']);        

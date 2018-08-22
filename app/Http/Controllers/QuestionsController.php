@@ -6,14 +6,40 @@ use Illuminate\Http\Request;
 use App\Questions;
 use App\Answers;
 
+/**
+ * Class Pet
+ *
+ * @package App\Http\Controllers
+ */
+
 class QuestionsController extends Controller
 {
-     /**
-     * Display a listing of the resource.
-     *
-     * @return Response
+
+    /**
+     * @OAS\Post(
+     *     path="questions/read",
+     *     tags={"Questions"},
+     *     summary="List of questions and answers",
+     *     @OAS\Response(
+     *         response=200,
+     *         description="Ok",
+     *         @OAS\JsonContent(
+     *             type="array",
+     *             @OAS\Items(ref="#/../../Models/Answers")
+     *         )
+     *     ),
+     *     @OAS\Parameter(
+     *         name="Authorization",
+     *         in="query",
+     *         description="JWT access token.",
+     *         required=true,
+     *         @OAS\Schema(
+     *             type="header",
+     *         )
+     *     ),
+     * )
      */
-    public function index(Request $request) {
+    public function read(Request $request) {
         if($request->id != null) {
             $Questions = Questions::with('answers')->whereId($request->id)->first();
         }
@@ -25,10 +51,17 @@ class QuestionsController extends Controller
             'data' => $Questions
         ]);
     }
+
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
+     * @OAS\Post(
+     *     path="questions/create",
+     *     tags={"Questions"},
+     *     summary="Create a question with answers",
+     *     @OAS\Response(
+     *         response=405,
+     *         description="Invalid input"
+     *     ),
+     * )
      */
     public function create(Request $request) {
         $validator = Validator::make($request->all(), [
@@ -55,13 +88,19 @@ class QuestionsController extends Controller
             'data' => $bQuestions
         ]);
     }
+
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
+     * @OAS\Post(
+     *     path="questions/delete",
+     *     tags={"Questions"},
+     *     summary="Delete a question",
+     *     @OAS\Response(
+     *         response=405,
+     *         description="Invalid input"
+     *     ),
+     * )
      */
-    public function destroy(Request $request) {
+    public function delete(Request $request) {
         
         $validator = Validator::make($request->all(), [
             'id' => 'required'
@@ -78,4 +117,3 @@ class QuestionsController extends Controller
         ]);
     }
 }
-

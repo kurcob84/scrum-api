@@ -16,20 +16,11 @@ $api->version('v1', function ($api)
 {
     /////////////////
     // Private
-    $api->group(['prefix' => 'api'], function($api) 
+    $api->group(['prefix' => 'questions'], function($api) 
     {  
-    /**
-     * @OAS\Get(
-     *     path="/questions",
-     *     tags={"Questions"},
-     *     summary="List of questions and answerssssss",
-     *     @OAS\Response(
-     *         response=405,
-     *         description="Invalid input"
-     *     ),
-     * )
-     */
-        $api->get('questions',      'App\Http\Controllers\QuestionsController@index');
+        $api->get('read',           'App\Http\Controllers\QuestionsController@read');
+        $api->get('creates',        'App\Http\Controllers\QuestionsController@create');
+        $api->get('delete',         'App\Http\Controllers\QuestionsController@delete');
     });
     //////////////////////////////
     // Public

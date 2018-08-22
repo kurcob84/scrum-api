@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Questions;
-use App\Answers;
+use App\Models\Questions;
+use App\Models\Answers;
 
 class questions_answers extends Seeder
 {
