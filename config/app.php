@@ -2,6 +2,8 @@
 
 return [
 
+    'name' => env('APP_URL_WEB'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -163,6 +165,7 @@ return [
         Barryvdh\Cors\ServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         L5Swagger\L5SwaggerServiceProvider::class,
+        Snowfire\Beautymail\BeautymailServiceProvider::class
     ],
 
     /*

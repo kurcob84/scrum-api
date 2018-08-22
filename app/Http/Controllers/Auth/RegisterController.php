@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 { 
@@ -22,7 +23,7 @@ class RegisterController extends Controller
      *     ),
      * )
      */  
-    public function register(SignUpRequest $request) {
+    public function register(Request $request) {
         $request->email = strtolower($request->email);
         $user = new User($request->all());
         $user->confirm_code_email = $this->getConfirm_code();
@@ -33,10 +34,20 @@ class RegisterController extends Controller
         }
 
         $user_role = Role::whereName('USER')->first();
-        $user->attachRole($user_role);
+        $user->roles()->save($user_role);
         
         return response()->json([
             'status' => 'ok'
         ], 201);
+    }
+    
+    /**
+     * calculates a random string
+     * 
+     * @return type
+     */
+    protected function getConfirm_code()
+    {
+        return hash_hmac('sha256', str_random(40), config('app.key'));
     }
 }

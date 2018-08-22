@@ -20,9 +20,10 @@ class user_seeder extends Seeder
         $user = new User();
         $user->firstname        = "Admin";
         $user->surname          = "Rogge";
-        $user->salution         = "Herr";
+        $user->salutation       = 1;
         $user->email            = "roggepatrick@googlemail.com";
-        $user->password         = bcrypt('scrum');
+        $user->language         = 'de';
+        $user->password         = Hash::make('scrum');
         $user->save();
 
         $user_role = new User_Role();
@@ -33,9 +34,10 @@ class user_seeder extends Seeder
         $user = new User();
         $user->firstname        = "User";
         $user->surname          = "Patrick";
-        $user->salution         = "Herr";
+        $user->salutation       = 2;
         $user->email            = "roggepatrick@gmail.com";
-        $user->password         = bcrypt('scrum');
+        $user->language         = 'en';
+        $user->password         = Hash::make('scrum');
         $user->save();
 
         $user_role = new User_Role();
