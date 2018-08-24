@@ -1,0 +1,243 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Elasticsearch\Client;
+
+class SearchIndexCommand extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'search:index';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Indexes all relevant DB-Entries to Elasticsearch server';
+
+    /**
+     * private member for Elasticsearch client
+     */
+    private $searchClient;
+    
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct(Client $search)
+    {
+        parent::__construct();
+
+        $this->searchClient = $search;
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle() 
+    {               
+        
+        $arrSearchableModels = [
+            "User",
+            "Answers",
+            "Questions"
+        ];
+        
+        // typical settings for indices; will be inserted in index bodies        
+        $settings = [
+                    'settings' => 
+                    [            
+                        'analysis' => 
+                        [                        
+                            'filter' => 
+                            [
+                                'mynGram' => 
+                                [
+                                    'type'      => 'ngram',
+                                    'min_gram'  => 3,
+                                    'max_gram'  => 30,
+                                ],
+                            ],             
+                            'analyzer' =>
+                            [
+                                'simpleAn' =>
+                                [
+                                    'type'      => 'custom',
+                                    'tokenizer' => 'standard',
+                                    'filter'    =>  ['standard', 'lowercase', 'asciifolding'],
+                                ],
+                                'complexAn' =>
+                                [
+                                    'type'      => 'custom',
+                                    'tokenizer' => 'standard',
+                                    'filter'    =>  ['standard', 'lowercase', 'asciifolding', 'mynGram'],
+                                ],
+                                'searchAn' =>
+                                [
+                                    'type'      => 'custom',
+                                    'tokenizer' => 'standard',
+                                    'filter'    => ['standard', 'lowercase', 'asciifolding'],                                    
+                                ],
+                            ]
+                        ]
+                    ]
+                ];
+        
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // our indices + mappings + settings ...  
+        //
+        $mapping = array();
+        foreach ($arrSearchableModels as $models) {
+            $model_name = '\\App\\Models\\' . $models;
+            $model = new $model_name;
+            $properties = $model->toESIndex();
+            array_push($mapping, $mapping[$models] = [
+                '_source'       => [ 'enabled' => true ],    
+                'properties'    => []
+            ]);
+            foreach($properties as $name => $value) {
+                array_push($mapping[$models]['properties'], $mapping[$models]['properties'][$name] = $value);
+            }
+        }
+        print_r($mapping);
+        die();
+
+        $search = [
+            'index' => 'mwm_search',
+            'body'  => 
+            [
+                'mappings' => $mappings,
+                'settings' => $settings['settings']
+            ],
+        ];
+        
+        $msg = [
+            'index' => 'msg',
+            'body'  => 
+            [
+                'mappings' => 
+                [///////////////////////////////////////////////////////////////   
+                    'message' =>
+                    [
+                        '_source'       => [ 'enabled' => true ],                    
+                        'properties'    =>
+                        [   
+                            "thread_id"     => $options['id'],
+                            "message"       => $options['complex'],
+                            "subject"       => $options['complex'],
+                            "participants"  =>
+                            [                                
+                                "properties"=>
+                                [
+                                    "id"    => 
+                                    [
+                                        "type"              => "long",
+                                        "index"             => true     // index is needed in msg-search
+                                    ],              
+                                    "name"  => $options['complex'],
+                                ]
+                            ],
+                            "sender"        =>
+                            [                                
+                                "properties"=>
+                                [
+                                    "id"    => $options['id'],
+                                    "name"  => $options['complex'],
+                                ]
+                            ],
+                        ]
+                    ], 
+                ],
+                'settings' => $settings['settings']
+            ],
+        ];
+                
+        ////////////////////////////////////
+        //
+        // filling ElasticSearch-DB with that stuff
+        //
+        
+        // let's get some space 1st .. delete if necessary!
+        if ( $this->searchClient->indices()->exists(['index' => 'search']) )
+        {
+            $this->info("\n Index 'search' already exists - trying to delete ... ");
+            
+            $response = $this->searchClient->indices()->delete(['index' => 'search']);
+
+            if($response["acknowledged"] == true)
+            {
+                $this->info( " DONE" );
+            }
+            else
+            {
+                $this->error( json_encode( $response , JSON_PRETTY_PRINT ) );
+            }
+        }
+        
+        if ( $this->searchClient->indices()->exists(['index' => 'msg']) )
+        {
+            $this->info("\n Index 'msg' already exists - trying to delete ... ");   
+
+            $response = $this->searchClient->indices()->delete(['index' => 'msg']);
+
+            if($response["acknowledged"] == true)
+            {
+                $this->info( " DONE" );
+            }
+            else
+            {
+                $this->error( json_encode( $response , JSON_PRETTY_PRINT ) );
+            }
+        }
+        
+        // creating indices              
+        $response =  $this->searchClient->indices()->create($search);  
+        if($response["acknowledged"] == true)
+        {
+            $this->info( "\n Index created: 'search'" );
+        }
+        else
+        {
+            $this->error( json_encode( $response , JSON_PRETTY_PRINT ) );
+        }
+        
+        $response =  $this->searchClient->indices()->create($msg);
+        if($response["acknowledged"] == true)
+        {
+            $this->info( "\n Index created: 'msg'" );
+        }
+        else
+        {
+            $this->error( json_encode( $response , JSON_PRETTY_PRINT ) );
+        }
+        
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // filling indicies with data:
+        //
+        foreach ($arrSearchableModels as $models) {
+            $model_name = '\\App\\Models\\' . $models;
+            $model = new $model_name; 
+            $mod = new $model;
+            foreach ($mod::cursor() as $model)
+            {
+                $this->searchClient->index([
+                    'index' => $model->getSearchIndex(),
+                    'type' => $model->getSearchType(),
+                    'id' => $model->id,
+                    'body' => $model->toSearchArray(),
+                ]);
+            }
+        }
+    }
+}

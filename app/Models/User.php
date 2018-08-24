@@ -12,14 +12,16 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Notifications\Notifiable;
-use Snowfire\Beautymail\Beautymail;
+use App\Search\Searchable;
+use Config;
 
 class User extends Model implements JWTSubject, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract {
 
     use Authenticatable,
         Authorizable,
         CanResetPassword,
-        Notifiable;
+        Notifiable,
+        Searchable;
 
     protected $table = 'user';
 
@@ -73,5 +75,28 @@ class User extends Model implements JWTSubject, AuthenticatableContract, Authori
                 ->to($this->email, $this->firstname . $this->surname)
                 ->subject(__('mail.password_forgot_subject'));
         });    
+    }
+    
+    public function toESArray() 
+    {
+        return array
+        (
+            'firstname'    => $this->firstname,
+            'surname'      => $this->surname
+        );
+    }
+    
+    public function toESIndex() 
+    {
+        return array
+        (
+            'firstname'    => Config::get('elasticsearch.options.complex'),
+            'surname'      => Config::get('elasticsearch.options.complex')
+        );
+    }
+    
+    public function getESIndex()
+    {
+        return env('ELASTICSEARCH_INDEX');
     }
 }

@@ -2,6 +2,25 @@
 
 return [
 
+    'options' => [ 
+        'complex' =>  [
+            "type"              => "text",
+            "analyzer"          => "complexAn",
+            "search_analyzer"   => "searchAn",
+            "index"             => true
+        ],
+        'simple'  =>  [     
+            "type"              => "text",
+            "analyzer"          => "simpleAn",
+            "search_analyzer"   => "searchAn",
+            "index"             => true
+        ],
+        'id'      =>  [
+            "type"              => "long",
+            "index"             => false
+        ]              
+    ],
+
     /**
      * You can specify one of several different connections when building an
      * Elasticsearch client.

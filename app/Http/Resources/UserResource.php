@@ -5,16 +5,28 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\RoleResource;
 
+/**
+ * @OAS\Schema(
+ *     title="User",
+ *     @OAS\Xml(
+ *         name="User"
+ *     )
+ * )
+ */
+
 class UserResource extends JsonResource
 {
     /**
-     * @OAS\Schema(
-     *     title="User",
-     *     @OAS\Xml(
-     *         name="User"
-     *     )
-     * )
+     * @OAS\Property(property="id",type="integer")
+     * @OAS\Property(property="firstname",type="string")
+     * @OAS\Property(property="surname",type="string")
+     * @OAS\Property(property="email",type="string")
+     * @OAS\Property(property="language",type="string")
+     * @OAS\Property(property="roles",type="Role")
+     *
+     * @return array
      */
+
     public function toArray($request)
     {
         return [

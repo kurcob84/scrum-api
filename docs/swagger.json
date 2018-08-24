@@ -9,6 +9,20 @@
         "version": "1.0.0"
     },
     "paths": {
+        "auth/forgot": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Password forgot send Mail",
+                "operationId": "App\\Http\\Controllers\\Auth\\ForgotPasswordController::forgot",
+                "responses": {
+                    "424": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
         "auth/login": {
             "post": {
                 "tags": [
@@ -32,6 +46,34 @@
                 "operationId": "App\\Http\\Controllers\\Auth\\RegisterController::register",
                 "responses": {
                     "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "auth/register_confirmed": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register form for Users",
+                "operationId": "App\\Http\\Controllers\\Auth\\RegisterController::register_confirmed",
+                "responses": {
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "auth/reset": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Reset Password",
+                "operationId": "App\\Http\\Controllers\\Auth\\ResetPasswordController::reset",
+                "responses": {
+                    "424": {
                         "description": "Invalid input"
                     }
                 }
@@ -103,9 +145,12 @@
     },
     "components": {
         "schemas": {
-            "Answer": {
+            "AnswerResource": {
                 "title": "Answers",
                 "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
                     "answer": {
                         "type": "string"
                     },
@@ -117,15 +162,61 @@
                     "name": "Answers"
                 }
             },
-            "Question": {
+            "QuestionResource": {
                 "title": "Questions",
                 "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
                     "question": {
                         "type": "string"
+                    },
+                    "answers": {
+                        "type": "Answers"
                     }
                 },
                 "xml": {
                     "name": "Questions"
+                }
+            },
+            "RoleResource": {
+                "title": "Role",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "xml": {
+                    "name": "Role"
+                }
+            },
+            "UserResource": {
+                "title": "User",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "firstname": {
+                        "type": "string"
+                    },
+                    "surname": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "language": {
+                        "type": "string"
+                    },
+                    "roles": {
+                        "type": "Role"
+                    }
+                },
+                "xml": {
+                    "name": "User"
                 }
             }
         }

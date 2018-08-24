@@ -16,16 +16,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class AnswerResource extends JsonResource
 {
     /**
-     * @OAS\Property()
-     * @var string
+     * @OAS\Property(property="id",type="integer")
+     * @OAS\Property(property="answer",type="string")
+     * @OAS\Property(property="correct",type="boolean")
+     *
+     * @return array
      */
-    private $answer;
-
-    /**
-     * @OAS\Property()
-     * @var bool
-     */
-    private $correct;
 
     public function toArray($request)
     {

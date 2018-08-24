@@ -28,10 +28,10 @@ $api->version('v1', function ($api)
     
     /////////////////
     // Private
-    $api->group(['prefix' => 'questions'], function($api) 
+    $api->group(['prefix' => 'questions', 'middleware' => [ 'ChechForRole:USER']], function($api) 
     {  
-        $api->get('read',                   'App\Http\Controllers\QuestionsController@read');
-        $api->get('creates',                'App\Http\Controllers\QuestionsController@create');
-        $api->get('delete',                 'App\Http\Controllers\QuestionsController@delete');
+        $api->post('read',                  'App\Http\Controllers\QuestionsController@read');
+        $api->post('creates',               'App\Http\Controllers\QuestionsController@create');
+        $api->post('delete',                'App\Http\Controllers\QuestionsController@delete');
     });
 });

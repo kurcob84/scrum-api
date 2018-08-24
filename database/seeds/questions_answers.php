@@ -28,5 +28,27 @@ class questions_answers extends Seeder
         $answers->correct = 0;
         $answers->questions_id = $question->id;
         $answers->save();
+
+        $question2 = new Questions();
+        $question2->question = "Wie heißt die Hauptstand von Deutschland?";
+        $question2->save();
+
+        $answers = new Answers();
+        $answers->answer = "Berlin";
+        $answers->correct = 1;
+        $answers->questions_id = $question2->id;
+        $answers->save();
+
+        $answers = new Answers();
+        $answers->answer = "Hamburg";
+        $answers->correct = 0;
+        $answers->questions_id = $question2->id;
+        $answers->save();
+
+        $answers = new Answers();
+        $answers->answer = "Dresden";
+        $answers->correct = 0;
+        $answers->questions_id = $question2->id;
+        $answers->save();
     }
 }

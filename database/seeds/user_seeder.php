@@ -18,6 +18,7 @@ class user_seeder extends Seeder
         $role_user = Role::where('name', 'USER')->first();
 
         $user = new User();
+        $user->confirmed_at     = Carbon::now();
         $user->firstname        = "Admin";
         $user->surname          = "Rogge";
         $user->salutation       = 1;
@@ -30,8 +31,14 @@ class user_seeder extends Seeder
         $user_role->user_id     = $user->id;
         $user_role->role_id     = $role_admin->id;
         $user_role->save();
+        
+        $user_role = new User_Role();
+        $user_role->user_id     = $user->id;
+        $user_role->role_id     = $role_user->id;
+        $user_role->save();
 
         $user = new User();
+        $user->confirmed_at     = Carbon::now();
         $user->firstname        = "User";
         $user->surname          = "Patrick";
         $user->salutation       = 2;

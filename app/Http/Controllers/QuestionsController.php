@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Questions;
-use App\Answers;
+use App\Models\Questions;
+use App\Models\Answers;
+use App\Http\Resources\QuestionResource;
+use App\Http\Resources\QuestionCollection;
 
 /**
  * Class Pet
@@ -14,7 +16,6 @@ use App\Answers;
 
 class QuestionsController extends Controller
 {
-
     /**
      * @OAS\Post(
      *     path="questions/read",
@@ -41,14 +42,22 @@ class QuestionsController extends Controller
      */
     public function read(Request $request) {
         if($request->id != null) {
-            $Questions = Questions::with('answers')->whereId($request->id)->first();
+            $questions = new QuestionResource(Questions::with('answers')->whereId($request->id)->first());
+        }
+        elseif(isset($request->items)) {
+
+            $t = Questions::with('answers')->paginate(($request->items));
+            $questions = new QuestionCollection($t);
+
+            // $questions = new QuestionCollection();
         }
         else {
-            $Questions = Questions::with('answers')->get();
+            $questions = QuestionResource::collection(Questions::with('answers')->get());
         }
+
         return response()->json([
             'status' => 'ok',
-            'data' => $Questions
+            'data' => $questions
         ]);
     }
 
