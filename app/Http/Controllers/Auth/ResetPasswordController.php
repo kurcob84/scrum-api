@@ -9,9 +9,14 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Snowfire\Beautymail\Beautymail;
+use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\JWTAuth;
 
 class ResetPasswordController extends Controller
 {
+    private $user;
+
     /**
     * @OAS\Post(
     *     path="auth/reset",
@@ -25,6 +30,18 @@ class ResetPasswordController extends Controller
     */ 
     public function reset(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [ 
+            'password'              => 'required',
+            'password_confirmation' => 'required|same:password',
+            'token'                 => 'required'
+        ]);
+
+        if($validator->fails())
+        {
+            return response()->json([ 'error' => $validator->errors() ], 422);
+        } 
+
         $response = $this->broker()->reset(
             $this->credentials($request), function ($user, $password) {
                 $this->user = $user;
@@ -35,23 +52,20 @@ class ResetPasswordController extends Controller
         if($response !== Password::PASSWORD_RESET) {
             throw new HttpException(500);
         }
-        else {
-            $beautymail = app()->make(Snowfire\Beautymail\Beautymail::class);
-            $user = User::where('email', '=', strtolower('roggepatrick@googlemail.com'))->first();
-            App::setLocale('en');
-            $beautymail->send('mail.password_change', ["user" => $user], function($message)
-            {
-                $message
-                    ->from(env('MAIL_MASTER'))
-                    ->to($user->email, $user->firstname . $user->surname)
-                    ->subject(__('mail.password_change_subject'));
-            });
+        
+        $beautymail = app()->make(Beautymail::class);
+        $user = $this->user;
+        $beautymail->send('mail.password_change', ["user" => $user], function($message) use ($user)
+        {
+            $message
+                ->from(env('MAIL_MASTER'))
+                ->to($user->email, $user->firstname . $user->surname)
+                ->subject(__('mail.password_change_subject'));
+        });
 
-            return response()->json([
-                'status' => 'ok',
-                'token' => $JWTAuth->fromUser($user)
-            ]);
-        }
+        return response()->json([
+            'status' => 'ok'
+        ]);
     }
 
     /**

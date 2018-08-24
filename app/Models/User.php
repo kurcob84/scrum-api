@@ -12,6 +12,7 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Notifications\Notifiable;
+use Snowfire\Beautymail\Beautymail;
 
 class User extends Model implements JWTSubject, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract {
 
@@ -37,12 +38,12 @@ class User extends Model implements JWTSubject, AuthenticatableContract, Authori
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token','pivot',
     ];
 
     public function roles()
     {
-        return $this->belongsToMany('App\Models\Role', 'user_role', 'user_id', 'role_id');
+        return $this->belongsToMany('App\Models\Role', 'user_role');
     }
 
     public function getJWTIdentifier()
@@ -58,5 +59,19 @@ class User extends Model implements JWTSubject, AuthenticatableContract, Authori
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        // App::setLocale($this->language);
+        $beautymail = app()->make(Beautymail::class);
+        $user = $this;
+        $beautymail->send('mail.password_forgot', ['user' => $this, 'token' => $token], function($message) use ($user)
+        {
+            $message
+                ->from(env('MAIL_MASTER'))
+                ->to($this->email, $this->firstname . $this->surname)
+                ->subject(__('mail.password_forgot_subject'));
+        });    
     }
 }

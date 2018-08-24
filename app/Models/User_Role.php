@@ -10,10 +10,10 @@ class User_Role extends Model
     public $timestamps = true;
     
     public function user() {
-        return $this->hasOne('User', 'user_id');
+        return $this->hasOne('App\Models\User', 'user_id');
     }
 
     public function role() {
-        return $this->hasOne('Role', 'role_id');
+        return $this->hasOne('App\Models\Role', 'role_id');
     }
 }

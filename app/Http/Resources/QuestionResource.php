@@ -13,7 +13,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * )
  */
 
-class Question extends JsonResource
+class QuestionResource extends JsonResource
 {
     /**
      * @OAS\Property()
