@@ -7,6 +7,10 @@ use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
+use App\Rules\UserNotExists;
+use App\Rules\UserDeleted;
+use App\Rules\UserConfirmed;
 
 class ForgotPasswordController extends Controller
 {
@@ -23,20 +27,31 @@ class ForgotPasswordController extends Controller
      */  
     public function forgot(Request $request)
     {
-        $user = User::where('email', '=', strtolower($request->email))->first();
 
-        if(!$user) {
-            throw new NotFoundHttpException();
+        $validator = Validator::make($request->all(), [ 
+            'email'             => ['required', 'email', new UserNotExists]
+        ]);
+
+        if($validator->fails())
+        {
+            return response()->json([ 'error' => $validator->errors() ], 422);
         }
-        if($user->confirm_code !== null){
-            return response()->json([
-                'error' => 'email confirmation required'
-            ],424);
-        }
-        if($user->confirmed_at === null){
-            return response()->json([
-                'error' => 'user not confirmed'
-            ],424);
+
+        $user = User::where('email', '=', strtolower($request->email))->first();
+        $validator = Validator::make(
+            [
+                "confirmed_at"  => $user->confirmed_at,
+                "deleted_at"    => $user->deleted_at
+            ], 
+            [ 
+                'confirmed_at'  => new UserConfirmed,
+                'deleted_at'    => new UserDeleted
+            ]
+        );
+
+        if($validator->fails())
+        {
+            return response()->json([ 'error' => $validator->errors() ], 422);
         }
 
         $broker          = $this->getPasswordBroker();

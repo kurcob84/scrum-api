@@ -7,11 +7,12 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
+use App\Rules\UserConfirmed;
+use App\Rules\UserDeleted;
+use App\Rules\UserCredentials;
 
 class LoginController extends Controller
 {
@@ -41,38 +42,46 @@ class LoginController extends Controller
         $credentials = $request->only(['email', 'password']);        
         $credentials['email'] = strtolower($credentials['email']);
         
-        try {
-            
-            $token = $JWTAuth->attempt($credentials);
-            $JWTAuth->setToken($token);
-            $user = $JWTAuth->toUser($token);
-            $user->load('roles');
+        $token = $JWTAuth->attempt($credentials);
+        $validator = Validator::make(
+            [
+                "token"         => $token
+            ], 
+            [ 
+                'token'         => new UserCredentials,
+            ]
+        );
 
-            if($user->confirmed_at == NULL) 
-            {
-                throw new AccessDeniedHttpException("user_not_confirmed");
-            }
-
-            if($user->deleted_at != NULL) 
-            {
-                throw new AccessDeniedHttpException();
-            }
-            
-            if(!$token) 
-            {
-                throw new AccessDeniedHttpException();
-            }
-            
-            return response()->json([
-                'status' => 'ok',
-                'user' => $user,
-                'user' => new UserResource($user),
-                'token' => $token
-            ], 201);
-            
-        } catch (JWTException $e) 
-        {   
-           throw new AccessDeniedHttpException();
+        if($validator->fails())
+        {
+            return response()->json([ 'error' => $validator->errors() ], 422);
         }
+
+        $JWTAuth->setToken($token);
+        $user = $JWTAuth->toUser($token);
+        $user->load('roles');
+
+        $validator = Validator::make(
+            [
+                "confirmed_at"  => $user->confirmed_at,
+                "deleted_at"    => $user->deleted_at
+            ], 
+            [ 
+                'confirmed_at'  => new UserConfirmed,
+                'deleted_at'    => new UserDeleted
+            ]
+        );
+
+        if($validator->fails())
+        {
+            return response()->json([ 'error' => $validator->errors() ], 422);
+        }
+        
+        return response()->json([
+            'status' => 'ok',
+            'user' => $user,
+            'user' => new UserResource($user),
+            'token' => $token
+        ], 201);
     }
 }

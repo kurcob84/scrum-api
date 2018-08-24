@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Snowfire\Beautymail\Beautymail;
 use Carbon\Carbon;
+use App\Rules\UserExists;
 
 class RegisterController extends Controller
 { 
@@ -31,7 +32,7 @@ class RegisterController extends Controller
     public function register(Request $request) {
 
         $validator = Validator::make($request->all(), [ 
-            'email'             => 'required|email',
+            'email'             => ['required', 'email', new UserExists],
             'password'          => 'required',
             'password_confirm'  => 'required|same:password'
         ]);
@@ -39,13 +40,6 @@ class RegisterController extends Controller
         if($validator->fails())
         {
             return response()->json([ 'error' => $validator->errors() ], 422);
-        }  
-
-        $request->email = strtolower($request->email);
-        if (User::where('email', '=', $request->email)->exists()) {
-            return response()->json([
-                'status' => 'Benutzer existiert bereits'
-            ], 201);
         }
        
         $user = new User($request->all());

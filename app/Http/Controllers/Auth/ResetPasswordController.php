@@ -48,9 +48,17 @@ class ResetPasswordController extends Controller
                 $this->resetPassword($user, $password);
             }
         );
-        
+
+        if($response === Password::INVALID_PASSWORD) {
+            return response()->json([ 'error' =>  ["password" => "Das Password ist zu kurz"]], 422);
+        } 
+
+        if($response === Password::INVALID_USER) {
+            return response()->json([ 'error' =>  ["password" => "Der Benutzer konnte nicht gefunden werden"]], 422);
+        }            
+
         if($response !== Password::PASSWORD_RESET) {
-            throw new HttpException(500);
+            return response()->json([ 'error' =>  ["password" => "Fehler beim Passwort ändern."]], 422);
         }
         
         $beautymail = app()->make(Beautymail::class);
