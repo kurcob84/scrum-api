@@ -45,10 +45,7 @@ class RegisterController extends Controller
         $user = new User($request->all());
         $user->confirm_code = $this->getConfirm_code();
         $user->password = Hash::make($request->password);
-        if(!$user->save()) 
-        {
-            throw new HttpException(500);
-        }
+        $user->save();
 
         $user_role = Role::whereName('USER')->first();
         $user->roles()->save($user_role);
