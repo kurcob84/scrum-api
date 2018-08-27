@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Elasticsearch\Client;
+use Config;
 
 class SearchIndexCommand extends Command
 {
@@ -38,19 +39,46 @@ class SearchIndexCommand extends Command
         $this->searchClient = $search;
     }
 
+    private function array_push_assoc($array, $key, $value) {
+        $array[$key] = $value;
+        return $array;
+    }
+
+    function getModels($path){
+        $out = [];
+        $results = scandir($path);
+        foreach ($results as $result) {
+            if ($result === '.' or $result === '..') continue;
+            $filename = $path . '\\' . $result;
+            if (is_dir($filename)) {
+                $out = array_merge($out, getModels($filename));
+            }
+            else{
+                $out[] = substr($filename,0,-4);
+            }
+        }
+        return $out;
+    }
+
     /**
      * Execute the console command.
      *
      * @return mixed
      */
     public function handle() 
-    {               
+    {
+        $arrSearchableModels = array();
+        $models = $this->getModels("App\Models");
+        foreach ($models as $model) {
+            
+            $model_name = new $model;
+            $traits = class_uses($model_name);
+
+            if (in_array('App\Search\Searchable', $traits)) {
+                array_push($arrSearchableModels, $model);
+            }
         
-        $arrSearchableModels = [
-            "User",
-            "Answers",
-            "Questions"
-        ];
+        }
         
         // typical settings for indices; will be inserted in index bodies        
         $settings = [
@@ -98,25 +126,25 @@ class SearchIndexCommand extends Command
         //
         $mapping = array();
         foreach ($arrSearchableModels as $models) {
-            $model_name = '\\App\\Models\\' . $models;
-            $model = new $model_name;
+            $model = new $models;
+            $model_name = $models;
             $properties = $model->toESIndex();
-            array_push($mapping, $mapping[$models] = [
+
+            $mapping[$models] = [
                 '_source'       => [ 'enabled' => true ],    
                 'properties'    => []
-            ]);
+            ];
+            
             foreach($properties as $name => $value) {
-                array_push($mapping[$models]['properties'], $mapping[$models]['properties'][$name] = $value);
+                $mapping[$models]['properties'] = $this->array_push_assoc($mapping[$models]['properties'], $name, $value);
             }
         }
-        print_r($mapping);
-        die();
 
         $search = [
-            'index' => 'mwm_search',
+            'index' => 'search',
             'body'  => 
             [
-                'mappings' => $mappings,
+                'mappings' => $mapping,
                 'settings' => $settings['settings']
             ],
         ];
@@ -132,9 +160,9 @@ class SearchIndexCommand extends Command
                         '_source'       => [ 'enabled' => true ],                    
                         'properties'    =>
                         [   
-                            "thread_id"     => $options['id'],
-                            "message"       => $options['complex'],
-                            "subject"       => $options['complex'],
+                            "thread_id"     => Config::get('elasticsearch.options.id'),
+                            "message"       => Config::get('elasticsearch.options.complex'),
+                            "subject"       => Config::get('elasticsearch.options.complex'),
                             "participants"  =>
                             [                                
                                 "properties"=>
@@ -144,15 +172,15 @@ class SearchIndexCommand extends Command
                                         "type"              => "long",
                                         "index"             => true     // index is needed in msg-search
                                     ],              
-                                    "name"  => $options['complex'],
+                                    "name"  => Config::get('elasticsearch.options.complex'),
                                 ]
                             ],
                             "sender"        =>
                             [                                
                                 "properties"=>
                                 [
-                                    "id"    => $options['id'],
-                                    "name"  => $options['complex'],
+                                    "id"    => Config::get('elasticsearch.options.id'),
+                                    "name"  => Config::get('elasticsearch.options.complex'),
                                 ]
                             ],
                         ]
@@ -226,8 +254,7 @@ class SearchIndexCommand extends Command
         // filling indicies with data:
         //
         foreach ($arrSearchableModels as $models) {
-            $model_name = '\\App\\Models\\' . $models;
-            $model = new $model_name; 
+            $model = new $models; 
             $mod = new $model;
             foreach ($mod::cursor() as $model)
             {
