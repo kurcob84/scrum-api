@@ -30,7 +30,7 @@ class questions_answers extends Seeder
         $answers->save();
 
         $question2 = new Questions();
-        $question2->question = "Wie heißt die Hauptstand von Deutschland?";
+        $question2->question = "Wie heißt die Hauptstadt von Deutschland?";
         $question2->save();
 
         $answers = new Answers();

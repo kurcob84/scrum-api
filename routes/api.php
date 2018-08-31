@@ -3,35 +3,33 @@
 /**
  * @OAS\Info(
  *     description="Scrum API - For Adding Questions and answers",
- *     version="1.0.0",
+ *     version="1.0.1",
  *     title="Scrum API",
  *     @OAS\Contact(
  *         email="roggepatrick@googlemail.com"
  *     )
  * )
+ * )
  */
 
-$api = app('Dingo\Api\Routing\Router');
-$api->version('v1', function ($api) 
-{
-    
-    //////////////////////////////
-    // Public
-    $api->group(['prefix' => 'auth'], function($api) 
-    {  
-        $api->post('register',              'App\Http\Controllers\Auth\RegisterController@register');
-        $api->post('register_confirmed',    'App\Http\Controllers\Auth\RegisterController@register_confirmed');
-        $api->post('login',                 'App\Http\Controllers\Auth\LoginController@login');
-        $api->post('forgot',                'App\Http\Controllers\Auth\ForgotPasswordController@forgot');
-        $api->post('reset',                 'App\Http\Controllers\Auth\ResetPasswordController@reset');        
-    });
-    
-    /////////////////
-    // Private
-    $api->group(['prefix' => 'questions', 'middleware' => [ 'ChechForRole:USER']], function($api) 
-    {  
-        $api->post('read',                  'App\Http\Controllers\QuestionsController@read');
-        $api->post('creates',               'App\Http\Controllers\QuestionsController@create');
-        $api->post('delete',                'App\Http\Controllers\QuestionsController@delete');
-    });
+Route::group(['prefix' => 'auth', 'namespace' => 'auth'], function () {    
+
+    Route::post(    'register',                 'RegisterController@register');
+    Route::post(    'register_confirmed',       'RegisterController@register_confirmed');
+    Route::post(    'login',                    'LoginController@login');
+    Route::post(    'forgot',                   'ForgotPasswordController@forgot');
+    Route::post(    'reset',                    'ResetPasswordController@reset');  
+});
+
+Route::group(['prefix' => 'question', 'middleware' => 'auth:api'], function () {
+  
+    Route::get(     'read',                     'QuestionController@read');
+    Route::post(    'create',                   'QuestionController@create');
+    Route::put(     'update',                   'QuestionController@update');
+    Route::delete(  'delete',                   'QuestionController@delete');
+});
+
+Route::group(['prefix' => 'search', 'middleware' => 'auth:api'], function () {
+  
+    Route::post(    '',                         'SearchController@searchQuestion');
 });

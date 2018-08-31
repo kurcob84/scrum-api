@@ -22,7 +22,7 @@ class UserResource extends JsonResource
      * @OAS\Property(property="surname",type="string")
      * @OAS\Property(property="email",type="string")
      * @OAS\Property(property="language",type="string")
-     * @OAS\Property(property="roles",type="Role")
+     * @OAS\Property(property="roles",ref="#components/schemas/RoleResource")
      *
      * @return array
      */

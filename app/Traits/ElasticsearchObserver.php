@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Search;
+namespace App\Traits;
 
 use Elasticsearch\Client;
 use Elasticsearch\Common\Exceptions\ElasticsearchException;

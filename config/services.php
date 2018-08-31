@@ -34,5 +34,9 @@ return [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],
+    'search' => [
+        'enabled' => env('ELASTICSEARCH_ENABLED'),
+        'hosts'   => explode(',', env('ELASTICSEARCH_HOSTS')),
+    ]
 
 ];

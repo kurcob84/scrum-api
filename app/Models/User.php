@@ -12,7 +12,8 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Notifications\Notifiable;
-use App\Search\Searchable;
+use App\Traits\Searchable;
+use Laravel\Passport\HasApiTokens;
 use Config;
 
 class User extends Model implements JWTSubject, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract {
@@ -21,6 +22,7 @@ class User extends Model implements JWTSubject, AuthenticatableContract, Authori
         Authorizable,
         CanResetPassword,
         Notifiable,
+        HasApiTokens,
         Searchable;
 
     protected $table = 'user';
@@ -97,6 +99,6 @@ class User extends Model implements JWTSubject, AuthenticatableContract, Authori
     
     public function getESIndex()
     {
-        return env('ELASTICSEARCH_INDEX');
+        return Config::get('app.elasticsearch_index');
     }
 }

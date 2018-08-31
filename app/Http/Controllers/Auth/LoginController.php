@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Rules\UserConfirmed;
 use App\Rules\UserDeleted;
 use App\Rules\UserCredentials;
+use Illuminate\Support\Facades\Auth; 
 
 class LoginController extends Controller
 {
@@ -38,50 +39,47 @@ class LoginController extends Controller
         {
             return response()->json([ 'error' => $validator->errors() ], 422);
         }
+        $credentials = $request->only(['email', 'password']);  
+        $user = User::where('email', strtolower($credentials['email']))->first();
+        if($user) {
 
-        $credentials = $request->only(['email', 'password']);        
-        $credentials['email'] = strtolower($credentials['email']);
-        
-        $token = $JWTAuth->attempt($credentials);
-        $validator = Validator::make(
-            [
-                "token"         => $token
-            ], 
-            [ 
-                'token'         => new UserCredentials,
-            ]
-        );
+            $validator = Validator::make(
+                [
+                    "confirmed_at"  => $user->confirmed_at,
+                    "deleted_at"    => $user->deleted_at
+                ], 
+                [ 
+                    'confirmed_at'  => new UserConfirmed,
+                    'deleted_at'    => new UserDeleted
+                ]
+            );
+    
+            if($validator->fails())
+            {
+                return response()->json([ 'error' => $validator->errors() ], 422);
+            }
 
-        if($validator->fails())
-        {
-            return response()->json([ 'error' => $validator->errors() ], 422);
+            if(Auth::attempt(['email' => strtolower($credentials['email']), 'password' => $credentials['password']])){
+                // dd($user);
+                $token = $user->createToken('Login Token')->accessToken;
+                return response()->json([
+                    'status' => 'ok',
+                    'user' => $user,
+                    'token' => $token
+                ], 201);
+            }
+            else {
+                return response()->json([
+                    'status' => 'ok',
+                    'user' => 'password missmatch'
+                ], 201); 
+            }
         }
-
-        $JWTAuth->setToken($token);
-        $user = $JWTAuth->toUser($token);
-        $user->load('roles');
-
-        $validator = Validator::make(
-            [
-                "confirmed_at"  => $user->confirmed_at,
-                "deleted_at"    => $user->deleted_at
-            ], 
-            [ 
-                'confirmed_at'  => new UserConfirmed,
-                'deleted_at'    => new UserDeleted
-            ]
-        );
-
-        if($validator->fails())
-        {
-            return response()->json([ 'error' => $validator->errors() ], 422);
+        else {
+            return response()->json([
+                'status' => 'ok',
+                'user' => 'user does not exist'
+            ], 201);
         }
-        
-        return response()->json([
-            'status' => 'ok',
-            'user' => $user,
-            'user' => new UserResource($user),
-            'token' => $token
-        ], 201);
     }
 }

@@ -19,7 +19,7 @@ class QuestionResource extends JsonResource
     /**
      * @OAS\Property(property="id",type="integer")
      * @OAS\Property(property="question",type="string")
-     * @OAS\Property(property="answers",type="Answers")
+     * @OAS\Property(property="answers",ref="#components/schemas/AnswerResource")
      *
      * @return array
      */

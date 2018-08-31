@@ -6,7 +6,7 @@
         "contact": {
             "email": "roggepatrick@googlemail.com"
         },
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     "paths": {
         "auth/forgot": {
@@ -79,13 +79,13 @@
                 }
             }
         },
-        "questions/read": {
+        "question/read": {
             "post": {
                 "tags": [
                     "Questions"
                 ],
                 "summary": "List of questions and answers",
-                "operationId": "App\\Http\\Controllers\\QuestionsController::read",
+                "operationId": "App\\Http\\Controllers\\QuestionController::read",
                 "parameters": [
                     {
                         "name": "Authorization",
@@ -114,13 +114,13 @@
                 }
             }
         },
-        "questions/create": {
+        "question/create": {
             "post": {
                 "tags": [
                     "Questions"
                 ],
                 "summary": "Create a question with answers",
-                "operationId": "App\\Http\\Controllers\\QuestionsController::create",
+                "operationId": "App\\Http\\Controllers\\QuestionController::create",
                 "responses": {
                     "405": {
                         "description": "Invalid input"
@@ -128,13 +128,27 @@
                 }
             }
         },
-        "questions/delete": {
+        "question/delete": {
             "post": {
                 "tags": [
                     "Questions"
                 ],
                 "summary": "Delete a question",
-                "operationId": "App\\Http\\Controllers\\QuestionsController::delete",
+                "operationId": "App\\Http\\Controllers\\QuestionController::delete",
+                "responses": {
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "question/update": {
+            "post": {
+                "tags": [
+                    "Questions"
+                ],
+                "summary": "Update a question",
+                "operationId": "App\\Http\\Controllers\\QuestionController::update",
                 "responses": {
                     "405": {
                         "description": "Invalid input"
@@ -172,7 +186,7 @@
                         "type": "string"
                     },
                     "answers": {
-                        "type": "Answers"
+                        "$ref": "#components/schemas/AnswerResource"
                     }
                 },
                 "xml": {
@@ -212,7 +226,7 @@
                         "type": "string"
                     },
                     "roles": {
-                        "type": "Role"
+                        "$ref": "#components/schemas/RoleResource"
                     }
                 },
                 "xml": {

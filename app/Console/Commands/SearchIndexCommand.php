@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Elasticsearch\Client;
 use Config;
+use App\Http\Services\ModelService;
 
 class SearchIndexCommand extends Command
 {
@@ -44,41 +45,15 @@ class SearchIndexCommand extends Command
         return $array;
     }
 
-    function getModels($path){
-        $out = [];
-        $results = scandir($path);
-        foreach ($results as $result) {
-            if ($result === '.' or $result === '..') continue;
-            $filename = $path . '\\' . $result;
-            if (is_dir($filename)) {
-                $out = array_merge($out, getModels($filename));
-            }
-            else{
-                $out[] = substr($filename,0,-4);
-            }
-        }
-        return $out;
-    }
-
     /**
      * Execute the console command.
      *
      * @return mixed
      */
-    public function handle() 
+    public function handle(ModelService $modelService) 
     {
         $arrSearchableModels = array();
-        $models = $this->getModels("App\Models");
-        foreach ($models as $model) {
-            
-            $model_name = new $model;
-            $traits = class_uses($model_name);
-
-            if (in_array('App\Search\Searchable', $traits)) {
-                array_push($arrSearchableModels, $model);
-            }
-        
-        }
+        $arrSearchableModels = $modelService->getSearchableModels();
         
         // typical settings for indices; will be inserted in index bodies        
         $settings = [

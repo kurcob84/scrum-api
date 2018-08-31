@@ -2,7 +2,11 @@
 
 return [
 
+    'model_path' => ('App\Models'),
+
     'name' => env('APP_URL_WEB'),
+
+    'elasticsearch_index' => env('ELASTICSEARCH_INDEX'),
 
     /*
     |--------------------------------------------------------------------------
@@ -165,7 +169,10 @@ return [
         Barryvdh\Cors\ServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         L5Swagger\L5SwaggerServiceProvider::class,
-        Snowfire\Beautymail\BeautymailServiceProvider::class
+        Snowfire\Beautymail\BeautymailServiceProvider::class,
+        Laravel\Passport\PassportServiceProvider::class,
+        App\Providers\ModelServiceProvider::class,
+        App\Providers\SearchServiceProvider::class,
     ],
 
     /*

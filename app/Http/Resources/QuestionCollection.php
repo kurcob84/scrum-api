@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use App\Http\Resources\QuestionResource;
 
 class QuestionCollection extends ResourceCollection
 {
@@ -14,6 +15,8 @@ class QuestionCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return ['data' => $this->collection];
+        return $this->collection->map(function ($item) use ($request) {
+            return (new QuestionResource($item))->toArray($request);
+        });
     }
 }

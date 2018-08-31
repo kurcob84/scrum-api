@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Search\Searchable;
+use App\Traits\Searchable;
 use Config;
 
 class Questions extends Model
@@ -19,13 +19,20 @@ class Questions extends Model
     public function answers() {
         return $this->hasMany('App\Models\Answers');
     }
+
+    protected static function boot() {
+        parent::boot();
+        static::deleting(function($question) {
+            $question->answers()->delete();
+        });
+    }
     
     public function toESArray() 
     {
         return array
         (
             'question'    => $this->question,
-            'answers'     => array_column($this->answers->toArray(), 'answers'),
+            'answers'     => array_column($this->answers->toArray(), 'answer'),
         );
     }
     
@@ -40,6 +47,6 @@ class Questions extends Model
     
     public function getESIndex()
     {
-        return env('ELASTICSEARCH_INDEX');
+        return Config::get('app.elasticsearch_index');
     }
 }

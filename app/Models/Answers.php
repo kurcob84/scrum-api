@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Search\Searchable;
+use App\Traits\Searchable;
 use Config;
 
 class Answers extends Model
@@ -34,6 +34,6 @@ class Answers extends Model
     
     public function getESIndex()
     {
-        return env('ELASTICSEARCH_INDEX');
+        return Config::get('app.elasticsearch_index');
     }
 }

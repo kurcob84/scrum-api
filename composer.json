@@ -10,10 +10,11 @@
         "caouecs/laravel-lang": "~3.0",
         "cviebrock/laravel-elasticsearch": "^3.1",
         "darkaonline/l5-swagger": "5.6.*",
-        "dingo/api": "2.0.0-alpha1",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "5.6.*",
+        "laravel/passport": "^6.0",
         "laravel/tinker": "^1.0",
+        "paragonie/random_compat": "2.*",
         "snowfire/beautymail": "dev-master",
         "tymon/jwt-auth": "dev-develop",
         "zircote/swagger-php": "3.*"
