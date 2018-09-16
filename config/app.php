@@ -173,6 +173,7 @@ return [
         Laravel\Passport\PassportServiceProvider::class,
         App\Providers\ModelServiceProvider::class,
         App\Providers\SearchServiceProvider::class,
+        Laravel\Socialite\SocialiteServiceProvider::class,
     ],
 
     /*
@@ -224,7 +225,8 @@ return [
         'Elasticsearch' => Cviebrock\LaravelElasticsearch\Facade::class,
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
-        'Carbon' => 'Carbon\Carbon'
+        'Carbon' => 'Carbon\Carbon',
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
     ],
 
 ];

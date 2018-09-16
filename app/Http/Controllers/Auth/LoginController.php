@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\UserConfirmed;
 use App\Rules\UserDeleted;
 use App\Rules\UserCredentials;
-use Illuminate\Support\Facades\Auth; 
+use Socialite;
+use Exception;
+use Auth;
 
 class LoginController extends Controller
 {
@@ -28,7 +28,7 @@ class LoginController extends Controller
      *     ),
      * )
      */    
-    public function login(Request $request, JWTAuth $JWTAuth) {
+    public function login(Request $request) {
 
         $validator = Validator::make($request->all(), [ 
             'email'             => 'required|email',
@@ -81,5 +81,43 @@ class LoginController extends Controller
                 'user' => 'user does not exist'
             ], 201);
         }
+    }
+
+    public function redirectToFacebook()
+    {
+        return Socialite::driver('facebook')->redirect();
+    }
+
+    public function handleFacebookCallback($provider)
+    {
+        try {
+            $user = Socialite::driver('facebook')->user();
+            $create['name'] = $user->getName();
+            $create['email'] = $user->getEmail();
+            $create['facebook_id'] = $user->getId();
+
+
+            $userModel = new User;
+            $createdUser = $userModel->addNew($create);
+            Auth::loginUsingId($createdUser->id);
+
+
+        return response()->json([
+            'status' => 'ok',
+            'user' => $user
+        ], 201); 
+
+
+        } catch (Exception $e) {
+
+
+
+
+        }
+
+        return response()->json([
+            'status' => 'ok',
+            'user' => $user
+        ], 201); 
     }
 }

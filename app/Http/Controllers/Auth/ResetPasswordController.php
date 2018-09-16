@@ -11,7 +11,6 @@ use App\Models\User;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Snowfire\Beautymail\Beautymail;
 use Illuminate\Support\Facades\Validator;
-use Tymon\JWTAuth\JWTAuth;
 
 class ResetPasswordController extends Controller
 {

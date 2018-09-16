@@ -66,6 +66,15 @@ class QuestionController extends Controller
      *         response=405,
      *         description="Invalid input"
      *     ),
+     *     @OAS\Parameter(
+     *         name="Authorization",
+     *         in="query",
+     *         description="JWT access token.",
+     *         required=true,
+     *         @OAS\Schema(
+     *             type="header",
+     *         )
+     *     ),
      * )
      */
     public function create(Request $request) {
@@ -105,6 +114,15 @@ class QuestionController extends Controller
      *         response=405,
      *         description="Invalid input"
      *     ),
+     *     @OAS\Parameter(
+     *         name="Authorization",
+     *         in="query",
+     *         description="JWT access token.",
+     *         required=true,
+     *         @OAS\Schema(
+     *             type="header",
+     *         )
+     *     ),
      * )
      */
     public function delete(Request $request) {
@@ -131,6 +149,15 @@ class QuestionController extends Controller
      *     @OAS\Response(
      *         response=405,
      *         description="Invalid input"
+     *     ),
+     *     @OAS\Parameter(
+     *         name="Authorization",
+     *         in="query",
+     *         description="JWT access token.",
+     *         required=true,
+     *         @OAS\Schema(
+     *             type="header",
+     *         )
      *     ),
      * )
      */

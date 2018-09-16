@@ -25,6 +25,7 @@ class CreateUserTable extends Migration
             $table->string('email', 250)->unique();
             $table->string('password', 250)->nullable();
             $table->string('confirm_code', 250)->nullable();
+            $table->string('facebook_id')->nullable();
         });
     }
 

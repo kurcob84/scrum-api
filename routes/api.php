@@ -19,10 +19,12 @@ Route::group(['prefix' => 'auth', 'namespace' => 'auth'], function () {
     Route::post(    'login',                    'LoginController@login');
     Route::post(    'forgot',                   'ForgotPasswordController@forgot');
     Route::post(    'reset',                    'ResetPasswordController@reset');  
+    Route::get(     'login/facebook',           'LoginController@redirectToFacebook');
+    Route::get(     'login/facebook/callback',  'LoginController@handleFacebookCallback');
 });
 
 Route::group(['prefix' => 'question', 'middleware' => 'auth:api'], function () {
-  
+
     Route::get(     'read',                     'QuestionController@read');
     Route::post(    'create',                   'QuestionController@create');
     Route::put(     'update',                   'QuestionController@update');

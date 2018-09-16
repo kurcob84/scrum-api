@@ -121,6 +121,17 @@
                 ],
                 "summary": "Create a question with answers",
                 "operationId": "App\\Http\\Controllers\\QuestionController::create",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "query",
+                        "description": "JWT access token.",
+                        "required": true,
+                        "schema": {
+                            "type": "header"
+                        }
+                    }
+                ],
                 "responses": {
                     "405": {
                         "description": "Invalid input"
@@ -135,6 +146,17 @@
                 ],
                 "summary": "Delete a question",
                 "operationId": "App\\Http\\Controllers\\QuestionController::delete",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "query",
+                        "description": "JWT access token.",
+                        "required": true,
+                        "schema": {
+                            "type": "header"
+                        }
+                    }
+                ],
                 "responses": {
                     "405": {
                         "description": "Invalid input"
@@ -149,6 +171,17 @@
                 ],
                 "summary": "Update a question",
                 "operationId": "App\\Http\\Controllers\\QuestionController::update",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "query",
+                        "description": "JWT access token.",
+                        "required": true,
+                        "schema": {
+                            "type": "header"
+                        }
+                    }
+                ],
                 "responses": {
                     "405": {
                         "description": "Invalid input"
