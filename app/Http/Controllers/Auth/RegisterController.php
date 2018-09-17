@@ -45,6 +45,19 @@ class RegisterController extends Controller
         $user->confirm_code = $this->getConfirm_code();
         $user->password = Hash::make($request->password);
         $user->save();
+
+        $user_role = Role::whereName('USER')->first();
+        $user->roles()->save($user_role);
+
+        $beautymail = app()->make(Beautymail::class);
+        $beautymail->send('mail.register', ["user" => $user], function($message) use ($user)
+        {
+            $message
+                ->from(env('MAIL_MASTER'))
+                ->to($user->email, "DoNotReply")
+                ->subject(__('mail.register_subject'));
+        });
+
         return response()->json([
             'status' => 'ok'
         ], 201);
@@ -75,7 +88,6 @@ class RegisterController extends Controller
         $user = User::whereConfirmCode($request->confirm_code)->first();
         $user->confirm_code = null;        
         $user->confirmed_at = Carbon::now();
-        $user->token = $user->createToken('LoginToken')->accessToken;
         $user->save();
        
         $beautymail = app()->make(Beautymail::class);

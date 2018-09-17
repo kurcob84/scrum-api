@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cab9944eb7182e2ecc9cb2a9071ad76c",
+    "content-hash": "d164292d6103e4b8b3e5139054cb2fd8",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1455,16 +1455,16 @@
         },
         {
             "name": "laravel/socialite",
-            "version": "v3.1.1",
+            "version": "v3.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/socialite.git",
-                "reference": "65f771ff4f266ebae23de1a3f18efd80a1da2f8d"
+                "reference": "b5f465847b1d637efa86bbfe2fc1c9d2bd12f60f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/socialite/zipball/65f771ff4f266ebae23de1a3f18efd80a1da2f8d",
-                "reference": "65f771ff4f266ebae23de1a3f18efd80a1da2f8d",
+                "url": "https://api.github.com/repos/laravel/socialite/zipball/b5f465847b1d637efa86bbfe2fc1c9d2bd12f60f",
+                "reference": "b5f465847b1d637efa86bbfe2fc1c9d2bd12f60f",
                 "shasum": ""
             },
             "require": {
@@ -1473,7 +1473,7 @@
                 "illuminate/http": "~5.4",
                 "illuminate/support": "~5.4",
                 "league/oauth1-client": "~1.0",
-                "php": ">=5.6.4"
+                "php": ">=5.4.0"
             },
             "require-dev": {
                 "mockery/mockery": "~0.9",
@@ -1509,12 +1509,11 @@
                 }
             ],
             "description": "Laravel wrapper around OAuth 1 & OAuth 2 libraries.",
-            "homepage": "https://laravel.com",
             "keywords": [
                 "laravel",
                 "oauth"
             ],
-            "time": "2018-08-16T12:51:21+00:00"
+            "time": "2018-06-01T15:06:47+00:00"
         },
         {
             "name": "laravel/tinker",

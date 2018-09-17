@@ -60,7 +60,6 @@ class LoginController extends Controller
             }
 
             if(Auth::attempt(['email' => strtolower($credentials['email']), 'password' => $credentials['password']])){
-                // dd($user);
                 $token = $user->createToken('Login Token')->accessToken;
                 return response()->json([
                     'status' => 'ok',
@@ -83,9 +82,38 @@ class LoginController extends Controller
         }
     }
 
+    /**
+     * @OAS\Post(
+     *     path="auth/logout",
+     *     tags={"Auth"},
+     *     summary="Logout a user",
+     *     @OAS\Response(
+     *         response=200,
+     *         description="Ok"
+     *     ),
+     *     @OAS\Parameter(
+     *         name="Authorization",
+     *         in="query",
+     *         description="JWT access token.",
+     *         required=true,
+     *         @OAS\Schema(
+     *             type="header",
+     *         )
+     *     ),
+     * )
+     */
+    public function logout(Request $request)
+    {
+        $request->user()->token()->revoke();
+        return response()->json([
+            'status' => 'ok'
+        ], 201);
+    }
+   
+
     public function redirectToFacebook()
     {
-        return Socialite::driver('facebook')->redirect();
+        return Socialite::driver('facebook')->stateless()->redirect();
     }
 
     public function handleFacebookCallback($provider)

@@ -14,13 +14,14 @@
 
 Route::group(['prefix' => 'auth', 'namespace' => 'auth'], function () {    
 
+    Route::post(    'login',                    'LoginController@login');
+    Route::post(    'login/facebook',           'LoginController@redirectToFacebook');
+    Route::post(    'login/facebook/callback',  'LoginController@handleFacebookCallback');
+    Route::post(    'logout',                   'LoginController@logout')->middleware('auth:api');
     Route::post(    'register',                 'RegisterController@register');
     Route::post(    'register_confirmed',       'RegisterController@register_confirmed');
-    Route::post(    'login',                    'LoginController@login');
     Route::post(    'forgot',                   'ForgotPasswordController@forgot');
-    Route::post(    'reset',                    'ResetPasswordController@reset');  
-    Route::get(     'login/facebook',           'LoginController@redirectToFacebook');
-    Route::get(     'login/facebook/callback',  'LoginController@handleFacebookCallback');
+    Route::post(    'reset',                    'ResetPasswordController@reset');
 });
 
 Route::group(['prefix' => 'question', 'middleware' => 'auth:api'], function () {

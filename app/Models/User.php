@@ -13,6 +13,7 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Notifications\Notifiable;
 use App\Traits\Searchable;
+use Snowfire\Beautymail\Beautymail;
 use Laravel\Passport\HasApiTokens;
 use Config;
 
