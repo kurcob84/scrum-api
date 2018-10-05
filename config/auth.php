@@ -38,13 +38,24 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'admin',
         ],
-
         'api' => [
             'driver' => 'passport',
-            'provider' => 'users',
+            'provider' => 'admin',
         ],
+        'admin' => [
+            'driver' => 'passport',
+            'provider' => 'admin',
+        ],
+        'company' => [
+            'driver' => 'passport',
+            'provider' => 'company',
+        ],
+        'applicant' => [
+            'driver' => 'passport',
+            'provider' => 'applicant',
+        ]
     ],
 
     /*
@@ -65,10 +76,18 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'admin' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => App\Models\Admin\Admin::class,
         ],
+        'applicant' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Applicant\Applicant::class,
+        ],
+        'company' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Company\Company::class,
+        ]
 
         // 'users' => [
         //     'driver' => 'database',
@@ -92,8 +111,18 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'admin' => [
+            'provider' => 'admin',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'applicant' => [
+            'provider' => 'applicant',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'company' => [
+            'provider' => 'company',
             'table' => 'password_resets',
             'expire' => 60,
         ],

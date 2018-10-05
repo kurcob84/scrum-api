@@ -25,6 +25,7 @@ class ElasticsearchObserver {
                 'id' => $model->id,
                 'body' => $model->toSearchArray(),
             ]);
+            // dd($model->toSearchArray());
         } catch (ElasticsearchException $ex) { // for example couldn't connect
             //Log as critical
             Log::critical('Exeption at ES: ' . $ex);

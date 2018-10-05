@@ -8,10 +8,10 @@ use Elasticsearch\Client;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\ModelService;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Questions;
+use App\Models\Question;
 use App\Http\Resources\QuestionResource;
 use App\Http\Resources\QuestionCollection;
-use App\Models\Answers;
+use App\Models\Answer;
 use App\Http\Resources\AnswerResource;
 use App\Http\Resources\AnswerCollection;
 
@@ -66,11 +66,11 @@ class SearchController extends Controller
     */
     public function searchQuestion(Request $request) 
     {  
-        $questions = $this->searchPerform($request);
+        $question = $this->searchPerform($request);
 
         return response()->json([
             'status'    => 'ok',
-            'data'      => $questions, 
+            'data'      => $question, 
         ], 201);
     }
 
@@ -103,14 +103,14 @@ class SearchController extends Controller
             $limit = self::MAX_SEARCH_RESULTS;
         }
                               
-        $model = new Questions;
-        $questions = $this->search($model, $request->search, $limit, $filter_ids ) ;
-        if(!is_null($questions))
+        $model = new Question;
+        $question = $this->search($model, $request->search, $limit, $filter_ids) ;
+        if(!is_null($question))
         {
-            $questions = QuestionResource::collection(Questions::whereIn('id', array_keys( $questions ))->with('answers')->get());       
+            $question = QuestionResource::collection(Question::whereIn('id', array_keys( $question ))->with('answer')->get());       
         }
         
-       return $questions;
+        return $question;
     }
 
     /**

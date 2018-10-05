@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Questions;
-use App\Models\Answers;
+use App\Models\Question;
+use App\Models\Answer;
 use App\Http\Resources\QuestionResource;
 use App\Http\Resources\QuestionCollection;
 use Illuminate\Support\Facades\Validator;
@@ -21,14 +21,14 @@ class QuestionController extends Controller
     /**
      * @OAS\Post(
      *     path="question/read",
-     *     tags={"Questions"},
-     *     summary="List of questions and answers",
+     *     tags={"Question"},
+     *     summary="List of question and answer",
      *     @OAS\Response(
      *         response=200,
      *         description="Ok",
      *         @OAS\JsonContent(
      *             type="array",
-     *             @OAS\Items(ref="#/../../Models/Answers")
+     *             @OAS\Items(ref="#/../../Models/Answer")
      *         )
      *     ),
      *     @OAS\Parameter(
@@ -44,15 +44,15 @@ class QuestionController extends Controller
      */
     public function read(Request $request) {
         if($request->id != null) {
-            $question = Questions::with('answers')->whereId($request->id)->first();
+            $question = Question::with('answer')->whereId($request->id)->first();
             return new QuestionResource($question);
         }
         elseif(isset($request->items)) {
-            $question = Questions::with('answers')->paginate($request->items);
+            $question = Question::with('answer')->paginate($request->items);
             return new QuestionCollection($question);
         }
         else {
-            $question = Questions::with('answers')->get();
+            $question = Question::with('answer')->get();
             return QuestionResource::collection($question);
         }
     }
@@ -60,8 +60,8 @@ class QuestionController extends Controller
     /**
      * @OAS\Post(
      *     path="question/create",
-     *     tags={"Questions"},
-     *     summary="Create a question with answers",
+     *     tags={"Question"},
+     *     summary="Create a question with answer",
      *     @OAS\Response(
      *         response=405,
      *         description="Invalid input"
@@ -88,16 +88,15 @@ class QuestionController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
         
-        $question = new Questions();
+        $question = new Question();
         $question->question = $request->question;
         $question->save();
-        
         foreach($request->answer as $ans) {
-            $Answers = new Answers();
-            $Answers->answer = $ans["answer"];
-            $Answers->correct = $ans["correct"];
-            $Answers->questions_id = $question->id;
-            $Answers->save();
+            $Answer = new Answer();
+            $Answer->answer = $ans["answer"];
+            $Answer->correct = $ans["correct"];
+            $Answer->question_id = $question->id;
+            $Answer->save();
         }
 
         return response()->json([
@@ -108,7 +107,7 @@ class QuestionController extends Controller
     /**
      * @OAS\Post(
      *     path="question/delete",
-     *     tags={"Questions"},
+     *     tags={"Question"},
      *     summary="Delete a question",
      *     @OAS\Response(
      *         response=405,
@@ -133,7 +132,7 @@ class QuestionController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-        $question = Questions::find($request->id);
+        $question = Question::find($request->id);
         $question->delete();
         
         return response()->json([
@@ -144,7 +143,7 @@ class QuestionController extends Controller
     /**
      * @OAS\Post(
      *     path="question/update",
-     *     tags={"Questions"},
+     *     tags={"Question"},
      *     summary="Update a question",
      *     @OAS\Response(
      *         response=405,
@@ -170,14 +169,14 @@ class QuestionController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
-        $question = Questions::with('answers')->find($request->id); 
+        $question = Question::with('answer')->find($request->id); 
         $question->question = $request->question;
         $question->save();
-        $answerDelete = array_diff($question->answers->pluck('id')->toArray(), array_column($request->answer, 'id'));
+        $answerDelete = array_diff($question->answer->pluck('id')->toArray(), array_column($request->answer, 'id'));
 
         //gelöscht
         foreach($answerDelete as $id) {
-            $answer = Answers::find($id);
+            $answer = Answer::find($id);
             $answer->delete();
         }
 
@@ -185,17 +184,17 @@ class QuestionController extends Controller
 
             //update
             if(isset($ans["id"])) {
-                $answer = Answers::find($ans["id"]);
+                $answer = Answer::find($ans["id"]);
                 $answer->answer = $ans["answer"];
                 $answer->correct = $ans["correct"];
                 $answer->save();
             }
             //neu
             elseif(!isset($ans["id"])) {
-                $answer = new Answers();
+                $answer = new Answer();
                 $answer->answer = $ans["answer"];
                 $answer->correct = $ans["correct"];
-                $answer->questions_id = $question->id;
+                $answer->question_id = $question->id;
                 $answer->save();
             }
         }
